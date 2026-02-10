@@ -21,11 +21,24 @@ export default class OfficialBuilds extends BaseDistribution {
     const osArch = this.translateArchToDistUrl(this.nodeInfo.arch);
 
     if (this.isLtsAlias(this.nodeInfo.versionSpec)) {
-      throw Error('lts/* version spec is not supported anymore.');
+      core.info('Attempt to resolve LTS alias from manifest...');
+
+      // No try-catch since it's not possible to resolve LTS alias without manifest
+      manifest = await this.getManifest();
+
+      this.nodeInfo.versionSpec = this.resolveLtsAliasFromManifest(
+        this.nodeInfo.versionSpec,
+        this.nodeInfo.stable,
+        manifest
+      );
     }
 
     if (this.isLatestSyntax(this.nodeInfo.versionSpec)) {
-      throw Error("'current/latest' version spec is not supported anymore.");
+      nodeJsVersions = await this.getNodeJsVersions();
+      const versions = this.filterVersions(nodeJsVersions);
+      this.nodeInfo.versionSpec = this.evaluateVersions(versions);
+
+      core.info('getting latest node version...');
     }
 
     if (this.nodeInfo.checkLatest) {
