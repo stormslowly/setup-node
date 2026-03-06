@@ -24,7 +24,7 @@ export default abstract class BaseDistribution {
     });
   }
 
-  protected abstract getDistributionUrl(mirror: string): string;
+  protected abstract getDistributionUrl(): string;
 
   public async setupNodeJs() {
     let nodeJsVersions: INodeVersion[] | undefined;
@@ -97,19 +97,10 @@ export default abstract class BaseDistribution {
   }
 
   protected async getNodeJsVersions(): Promise<INodeVersion[]> {
-    const initialUrl = this.getDistributionUrl(this.nodeInfo.mirror);
+    const initialUrl = this.getDistributionUrl();
     const dataUrl = `${initialUrl}/index.json`;
 
-    const headers = {};
-
-    if (this.nodeInfo.mirrorToken) {
-      headers['Authorization'] = this.nodeInfo.mirrorToken;
-    }
-
-    const response = await this.httpClient.getJson<INodeVersion[]>(
-      dataUrl,
-      headers
-    );
+    const response = await this.httpClient.getJson<INodeVersion[]>(dataUrl);
     return response.result || [];
   }
 
@@ -126,7 +117,7 @@ export default abstract class BaseDistribution {
           ? `${fileName}.zip`
           : `${fileName}.7z`
         : `${fileName}.tar.gz`;
-    const initialUrl = this.getDistributionUrl(this.nodeInfo.mirror);
+    const initialUrl = this.getDistributionUrl();
     const url = `${initialUrl}/v${version}/${urlFileName}`;
 
     return <INodeVersionInfo>{
@@ -143,11 +134,7 @@ export default abstract class BaseDistribution {
       `Acquiring ${info.resolvedVersion} - ${info.arch} from ${info.downloadUrl}`
     );
     try {
-      downloadPath = await tc.downloadTool(
-        info.downloadUrl,
-        undefined,
-        this.nodeInfo.mirrorToken
-      );
+      downloadPath = await tc.downloadTool(info.downloadUrl);
     } catch (err) {
       if (
         err instanceof tc.HTTPError &&
@@ -181,7 +168,7 @@ export default abstract class BaseDistribution {
     version: string,
     arch: string = os.arch()
   ): Promise<string> {
-    const initialUrl = this.getDistributionUrl(this.nodeInfo.mirror);
+    const initialUrl = this.getDistributionUrl();
     const osArch: string = this.translateArchToDistUrl(arch);
 
     // Create temporary folder to download to
@@ -198,34 +185,18 @@ export default abstract class BaseDistribution {
 
       core.info(`Downloading only node binary from ${exeUrl}`);
 
-      const exePath = await tc.downloadTool(
-        exeUrl,
-        undefined,
-        this.nodeInfo.mirrorToken
-      );
+      const exePath = await tc.downloadTool(exeUrl);
       await io.cp(exePath, path.join(tempDir, 'node.exe'));
-      const libPath = await tc.downloadTool(
-        libUrl,
-        undefined,
-        this.nodeInfo.mirrorToken
-      );
+      const libPath = await tc.downloadTool(libUrl);
       await io.cp(libPath, path.join(tempDir, 'node.lib'));
     } catch (err) {
       if (err instanceof tc.HTTPError && err.httpStatusCode == 404) {
         exeUrl = `${initialUrl}/v${version}/node.exe`;
         libUrl = `${initialUrl}/v${version}/node.lib`;
 
-        const exePath = await tc.downloadTool(
-          exeUrl,
-          undefined,
-          this.nodeInfo.mirrorToken
-        );
+        const exePath = await tc.downloadTool(exeUrl);
         await io.cp(exePath, path.join(tempDir, 'node.exe'));
-        const libPath = await tc.downloadTool(
-          libUrl,
-          undefined,
-          this.nodeInfo.mirrorToken
-        );
+        const libPath = await tc.downloadTool(libUrl);
         await io.cp(libPath, path.join(tempDir, 'node.lib'));
       } else {
         throw err;

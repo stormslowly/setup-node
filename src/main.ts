@@ -40,8 +40,6 @@ export async function run() {
     if (version) {
       const token = core.getInput('token');
       const auth = !token ? undefined : `token ${token}`;
-      const mirror = core.getInput('mirror');
-      const mirrorToken = core.getInput('mirror-token');
       const stable =
         (core.getInput('stable') || 'true').toUpperCase() === 'TRUE';
       const checkLatest =
@@ -51,9 +49,7 @@ export async function run() {
         checkLatest,
         auth,
         stable,
-        arch,
-        mirror,
-        mirrorToken
+        arch
       };
       const nodeDistribution = getNodejsDistribution(nodejsInfo);
       await nodeDistribution.setupNodeJs();
