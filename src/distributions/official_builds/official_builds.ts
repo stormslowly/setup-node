@@ -166,7 +166,7 @@ export default class OfficialBuilds extends BaseDistribution {
     return version;
   }
 
-  protected getDistributionUrl(mirror: string): string {
+  protected getDistributionUrl(): string {
     return DEFAULT_NODE_MIRROR;
   }
 
@@ -179,7 +179,7 @@ export default class OfficialBuilds extends BaseDistribution {
     return tc.getManifestFromRepo(
       'actions',
       'node-versions',
-      this.nodeInfo.mirror ? this.nodeInfo.mirrorToken : this.nodeInfo.auth,
+      this.nodeInfo.auth,
       'main'
     );
   }
