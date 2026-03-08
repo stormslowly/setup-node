@@ -5,7 +5,7 @@
 [![e2e-cache](https://github.com/actions/setup-node/actions/workflows/e2e-cache.yml/badge.svg?branch=main)](https://github.com/actions/setup-node/actions/workflows/e2e-cache.yml)
 [![proxy](https://github.com/actions/setup-node/actions/workflows/proxy.yml/badge.svg)](https://github.com/actions/setup-node/actions/workflows/proxy.yml)
 
-> **Fork of [actions/setup-node](https://github.com/actions/setup-node)** — Node.js binaries are downloaded from the [cnpm mirror](https://cdn.npmmirror.com/binaries/node/) instead of the official Node.js dist, which significantly improves download speed in some self-hosted network environments.
+> **Fork of [actions/setup-node](https://github.com/actions/setup-node)** — Node.js binaries are downloaded from the [npmmirror](https://npmmirror.com/) instead of the official Node.js dist, which significantly improves download speed in some self-hosted network environments.
 
 This action provides the following functionality for GitHub Actions users:
 
